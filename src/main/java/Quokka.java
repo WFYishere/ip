@@ -36,7 +36,7 @@ public class Quokka {
                 String body = input.substring(9).trim();
                 int byPos = body.indexOf(" /by ");
                 if (byPos == -1) {
-                    addTask(new Deadline(body, "")); // accept raw if /by missing (dates treated as strings)
+                    addTask(new Deadline(body, ""));
                 } else {
                     String desc = body.substring(0, byPos).trim();
                     String by = body.substring(byPos + 5).trim();
@@ -64,7 +64,7 @@ public class Quokka {
 
     private static int parseIndex(String s) {
         try {
-            return Integer.parseInt(s.trim()) - 1; // user is 1-based
+            return Integer.parseInt(s.trim()) - 1;
         } catch (NumberFormatException e) {
             return -1;
         }
@@ -81,10 +81,6 @@ public class Quokka {
             System.out.println(" Got it. I've added this task:");
             System.out.println("   " + task);
             System.out.println(" Now you have " + size + (size == 1 ? " task" : " tasks") + " in the list.");
-            System.out.println(LINE);
-        } else {
-            System.out.println(LINE);
-            System.out.println(" Sorry, I can only store up to " + MAX_TASKS + " tasks.");
             System.out.println(LINE);
         }
     }

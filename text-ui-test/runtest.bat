@@ -1,21 +1,23 @@
-@ECHO OFF
+@echo off
+setlocal
 
-REM create bin directory if it doesn't exist
-if not exist ..\bin mkdir ..\bin
+rem Clean previous ACTUAL.TXT if exists
+del text-ui-test\ACTUAL.TXT 2> NUL
 
-REM delete output from previous run
-if exist ACTUAL.TXT del ACTUAL.TXT
+rem Compile into out/
+if not exist out mkdir out
+javac -cp src\main\java -d out src\main\java\*.java
 
-REM compile the code into the bin folder
-javac  -cp ..\src\main\java -Xlint:none -d ..\bin ..\src\main\java\*.java
-IF ERRORLEVEL 1 (
-    echo ********** BUILD FAILURE **********
-    exit /b 1
+rem Run with redirected I/O
+java -classpath out Quokka < text-ui-test\input.txt > text-ui-test\ACTUAL.TXT
+
+rem Compare using fc; suppress diff output
+fc text-ui-test\EXPECTED.TXT text-ui-test\ACTUAL.TXT > NUL
+if %errorlevel%==0 (
+  echo All tests passed
+) else (
+  echo Tests failed
+  exit /b 1
 )
-REM no error here, errorlevel == 0
 
-REM run the program, feed commands from input.txt file and redirect the output to the ACTUAL.TXT
-java -classpath ..\bin Duke < input.txt > ACTUAL.TXT
-
-REM compare the output to the expected output
-FC ACTUAL.TXT EXPECTED.TXT
+endlocal
