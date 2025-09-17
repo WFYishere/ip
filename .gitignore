@@ -1,17 +1,12 @@
-# IDEA files
-/.idea/
-/out/
-/*.iml
-
-# Gradle build files
-/.gradle/
-/build/
-src/main/resources/docs/
-
-# MacOS custom attributes files created by Finder
-.DS_Store
+# Java/Gradle
+.gradle/
+build/
+out/
+target/
+**/*.class
+# IntelliJ
+.idea/
 *.iml
-bin/
-
-/text-ui-test/ACTUAL.TXT
-text-ui-test/EXPECTED-UNIX.TXT
+# OS
+.DS_Store
+Thumbs.db
