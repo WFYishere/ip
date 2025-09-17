@@ -18,27 +18,69 @@ public class Quokka {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String input;
         while ((input = br.readLine()) != null) {
+            input = input.trim();
             if (input.equals("bye")) {
                 break;
             } else if (input.equals("list")) {
                 printList();
             } else if (input.startsWith("mark ")) {
-                int idx = Integer.parseInt(input.substring(5)) - 1;
-                markTask(idx);
+                int idx = parseIndex(input.substring(5));
+                if (validIndex(idx)) markTask(idx);
             } else if (input.startsWith("unmark ")) {
-                int idx = Integer.parseInt(input.substring(7)) - 1;
-                unmarkTask(idx);
-            } else {
-                addTask(input);
+                int idx = parseIndex(input.substring(7));
+                if (validIndex(idx)) unmarkTask(idx);
+            } else if (input.startsWith("todo ")) {
+                String desc = input.substring(5).trim();
+                addTask(new Todo(desc));
+            } else if (input.startsWith("deadline ")) {
+                String body = input.substring(9).trim();
+                int byPos = body.indexOf(" /by ");
+                if (byPos == -1) {
+                    addTask(new Deadline(body, "")); // accept raw if /by missing (dates treated as strings)
+                } else {
+                    String desc = body.substring(0, byPos).trim();
+                    String by = body.substring(byPos + 5).trim();
+                    addTask(new Deadline(desc, by));
+                }
+            } else if (input.startsWith("event ")) {
+                String body = input.substring(6).trim();
+                String fromToken = " /from ";
+                String toToken = " /to ";
+                int fromPos = body.indexOf(fromToken);
+                int toPos = body.indexOf(toToken);
+                if (fromPos == -1 || toPos == -1 || toPos < fromPos) {
+                    addTask(new Event(body, "", ""));
+                } else {
+                    String desc = body.substring(0, fromPos).trim();
+                    String from = body.substring(fromPos + fromToken.length(), toPos).trim();
+                    String to = body.substring(toPos + toToken.length()).trim();
+                    addTask(new Event(desc, from, to));
+                }
+            } else if (!input.isEmpty()) {
+                addTask(new Todo(input));
             }
         }
     }
 
-    private static void addTask(String description) {
+    private static int parseIndex(String s) {
+        try {
+            return Integer.parseInt(s.trim()) - 1; // user is 1-based
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    private static boolean validIndex(int idx) {
+        return idx >= 0 && idx < size;
+    }
+
+    private static void addTask(Task task) {
         if (size < MAX_TASKS) {
-            tasks[size++] = new Task(description);
+            tasks[size++] = task;
             System.out.println(LINE);
-            System.out.println(" added: " + description);
+            System.out.println(" Got it. I've added this task:");
+            System.out.println("   " + task);
+            System.out.println(" Now you have " + size + (size == 1 ? " task" : " tasks") + " in the list.");
             System.out.println(LINE);
         } else {
             System.out.println(LINE);
@@ -57,23 +99,19 @@ public class Quokka {
     }
 
     private static void markTask(int idx) {
-        if (idx >= 0 && idx < size) {
-            tasks[idx].markAsDone();
-            System.out.println(LINE);
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + tasks[idx]);
-            System.out.println(LINE);
-        }
+        tasks[idx].markAsDone();
+        System.out.println(LINE);
+        System.out.println(" Nice! I've marked this task as done:");
+        System.out.println("   " + tasks[idx]);
+        System.out.println(LINE);
     }
 
     private static void unmarkTask(int idx) {
-        if (idx >= 0 && idx < size) {
-            tasks[idx].markAsNotDone();
-            System.out.println(LINE);
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + tasks[idx]);
-            System.out.println(LINE);
-        }
+        tasks[idx].markAsNotDone();
+        System.out.println(LINE);
+        System.out.println(" OK, I've marked this task as not done yet:");
+        System.out.println("   " + tasks[idx]);
+        System.out.println(LINE);
     }
 
     private static void printGreeting() {
