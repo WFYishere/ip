@@ -18,48 +18,71 @@ public class Quokka {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String input;
         while ((input = br.readLine()) != null) {
-            input = input.trim();
-            if (input.equals("bye")) {
-                break;
-            } else if (input.equals("list")) {
-                printList();
-            } else if (input.startsWith("mark ")) {
-                int idx = parseIndex(input.substring(5));
-                if (validIndex(idx)) markTask(idx);
-            } else if (input.startsWith("unmark ")) {
-                int idx = parseIndex(input.substring(7));
-                if (validIndex(idx)) unmarkTask(idx);
-            } else if (input.startsWith("todo ")) {
-                String desc = input.substring(5).trim();
-                addTask(new Todo(desc));
-            } else if (input.startsWith("deadline ")) {
-                String body = input.substring(9).trim();
-                int byPos = body.indexOf(" /by ");
-                if (byPos == -1) {
-                    addTask(new Deadline(body, ""));
-                } else {
+            try {
+                input = input.trim();
+                if (input.equals("bye")) {
+                    break;
+                } else if (input.equals("list")) {
+                    printList();
+                } else if (input.startsWith("mark ")) {
+                    int idx = parseIndex(input.substring(5));
+                    if (!validIndex(idx)) {
+                        throw new DukeException("No such task to mark.");
+                    }
+                    markTask(idx);
+                } else if (input.startsWith("unmark ")) {
+                    int idx = parseIndex(input.substring(7));
+                    if (!validIndex(idx)) {
+                        throw new DukeException("No such task to unmark.");
+                    }
+                    unmarkTask(idx);
+                } else if (input.startsWith("todo")) {
+                    String desc = input.length() > 4 ? input.substring(5).trim() : "";
+                    if (desc.isEmpty()) {
+                        throw new DukeException("The description of a todo cannot be empty.");
+                    }
+                    addTask(new Todo(desc));
+                } else if (input.startsWith("deadline")) {
+                    String body = input.length() > 8 ? input.substring(9).trim() : "";
+                    if (body.isEmpty()) {
+                        throw new DukeException("The description of a deadline cannot be empty.");
+                    }
+                    int byPos = body.indexOf(" /by ");
+                    if (byPos == -1) {
+                        throw new DukeException("A deadline must have '/by <time>'!");
+                    }
                     String desc = body.substring(0, byPos).trim();
                     String by = body.substring(byPos + 5).trim();
                     addTask(new Deadline(desc, by));
-                }
-            } else if (input.startsWith("event ")) {
-                String body = input.substring(6).trim();
-                String fromToken = " /from ";
-                String toToken = " /to ";
-                int fromPos = body.indexOf(fromToken);
-                int toPos = body.indexOf(toToken);
-                if (fromPos == -1 || toPos == -1 || toPos < fromPos) {
-                    addTask(new Event(body, "", ""));
-                } else {
+                } else if (input.startsWith("event")) {
+                    String body = input.length() > 5 ? input.substring(6).trim() : "";
+                    if (body.isEmpty()) {
+                        throw new DukeException("The description of an event cannot be empty.");
+                    }
+                    String fromToken = " /from ";
+                    String toToken = " /to ";
+                    int fromPos = body.indexOf(fromToken);
+                    int toPos = body.indexOf(toToken);
+                    if (fromPos == -1 || toPos == -1 || toPos < fromPos) {
+                        throw new DukeException("An event must have '/from <time> /to <time>'!");
+                    }
                     String desc = body.substring(0, fromPos).trim();
                     String from = body.substring(fromPos + fromToken.length(), toPos).trim();
                     String to = body.substring(toPos + toToken.length()).trim();
                     addTask(new Event(desc, from, to));
+                } else if (!input.isEmpty()) {
+                    throw new DukeException("I'm sorry, but I don't know what that means :-(");
                 }
-            } else if (!input.isEmpty()) {
-                addTask(new Todo(input));
+            } catch (DukeException e) {
+                printError(e.getMessage());
             }
         }
+    }
+
+    private static void printError(String message) {
+        System.out.println(LINE);
+        System.out.println(" OOPS!!! " + message);
+        System.out.println(LINE);
     }
 
     private static int parseIndex(String s) {
