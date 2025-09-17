@@ -1,12 +1,12 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Quokka {
     private static final String LINE = "____________________________________________________________";
-    private static final int MAX_TASKS = 100;
-    private static final Task[] tasks = new Task[MAX_TASKS];
-    private static int size = 0;
+    private static final List<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         printGreeting();
@@ -26,16 +26,22 @@ public class Quokka {
                     printList();
                 } else if (input.startsWith("mark ")) {
                     int idx = parseIndex(input.substring(5));
-                    if (!validIndex(idx)) {
+                    if (idx < 0 || idx >= tasks.size()) {
                         throw new DukeException("No such task to mark.");
                     }
                     markTask(idx);
                 } else if (input.startsWith("unmark ")) {
                     int idx = parseIndex(input.substring(7));
-                    if (!validIndex(idx)) {
+                    if (idx < 0 || idx >= tasks.size()) {
                         throw new DukeException("No such task to unmark.");
                     }
                     unmarkTask(idx);
+                } else if (input.startsWith("delete ")) {
+                    int idx = parseIndex(input.substring(7));
+                    if (idx < 0 || idx >= tasks.size()) {
+                        throw new DukeException("No such task to delete.");
+                    }
+                    deleteTask(idx);
                 } else if (input.startsWith("todo")) {
                     String desc = input.length() > 4 ? input.substring(5).trim() : "";
                     if (desc.isEmpty()) {
@@ -79,12 +85,6 @@ public class Quokka {
         }
     }
 
-    private static void printError(String message) {
-        System.out.println(LINE);
-        System.out.println(" OOPS!!! " + message);
-        System.out.println(LINE);
-    }
-
     private static int parseIndex(String s) {
         try {
             return Integer.parseInt(s.trim()) - 1;
@@ -93,43 +93,56 @@ public class Quokka {
         }
     }
 
-    private static boolean validIndex(int idx) {
-        return idx >= 0 && idx < size;
+    private static void addTask(Task task) {
+        tasks.add(task);
+        System.out.println(LINE);
+        System.out.println(" Got it. I've added this task:");
+        System.out.println("   " + task);
+        System.out.println(" Now you have " + tasks.size()
+                + (tasks.size() == 1 ? " task" : " tasks") + " in the list.");
+        System.out.println(LINE);
     }
 
-    private static void addTask(Task task) {
-        if (size < MAX_TASKS) {
-            tasks[size++] = task;
-            System.out.println(LINE);
-            System.out.println(" Got it. I've added this task:");
-            System.out.println("   " + task);
-            System.out.println(" Now you have " + size + (size == 1 ? " task" : " tasks") + " in the list.");
-            System.out.println(LINE);
-        }
+    private static void deleteTask(int idx) {
+        Task removed = tasks.remove(idx);
+        System.out.println(LINE);
+        System.out.println(" Noted. I've removed this task:");
+        System.out.println("   " + removed);
+        System.out.println(" Now you have " + tasks.size()
+                + (tasks.size() == 1 ? " task" : " tasks") + " in the list.");
+        System.out.println(LINE);
     }
 
     private static void printList() {
         System.out.println(LINE);
         System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < size; i++) {
-            System.out.println(" " + (i + 1) + "." + tasks[i]);
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println(" " + (i + 1) + "." + tasks.get(i));
         }
         System.out.println(LINE);
     }
 
     private static void markTask(int idx) {
-        tasks[idx].markAsDone();
+        Task t = tasks.get(idx);
+        t.markAsDone();
         System.out.println(LINE);
         System.out.println(" Nice! I've marked this task as done:");
-        System.out.println("   " + tasks[idx]);
+        System.out.println("   " + t);
         System.out.println(LINE);
     }
 
     private static void unmarkTask(int idx) {
-        tasks[idx].markAsNotDone();
+        Task t = tasks.get(idx);
+        t.markAsNotDone();
         System.out.println(LINE);
         System.out.println(" OK, I've marked this task as not done yet:");
-        System.out.println("   " + tasks[idx]);
+        System.out.println("   " + t);
+        System.out.println(LINE);
+    }
+
+    private static void printError(String message) {
+        System.out.println(LINE);
+        System.out.println(" OOPS!!! " + message);
         System.out.println(LINE);
     }
 
