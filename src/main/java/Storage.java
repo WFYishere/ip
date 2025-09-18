@@ -6,7 +6,15 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class Storage {
-    private static final String SEP_REGEX = " \\| ";
+    private static final String SEP_REGEX = "\\s*\\|\\s*";
+
+    private static String stripBom(String s) {
+        if (s != null && !s.isEmpty() && s.charAt(0) == '\uFEFF') {
+            return s.substring(1);
+        }
+        return s;
+    }
+
 
     private static void ensureParent(Path path) throws IOException {
         Path parent = path.getParent();
@@ -54,7 +62,8 @@ public class Storage {
 
 
     private static Task parseLine(String line) throws DukeException {
-        String[] parts = line.split(SEP_REGEX);
+        String cleaned = stripBom(line.trim());
+        String[] parts = cleaned.split(SEP_REGEX);
         if (parts.length < 3) throw new DukeException("Bad line: " + line);
         String tag = parts[0].trim();
         boolean done = parseDone(parts[1].trim());
@@ -66,12 +75,19 @@ public class Storage {
                 if (parts.length < 4) throw new DukeException("Deadline missing /by");
                 return new Deadline(desc, parts[3].trim(), done);
             case "E":
-                if (parts.length < 5) throw new DukeException("Event missing from/to");
-                return new Event(desc, parts[3].trim(), parts[4].trim(), done);
+                if (parts.length >= 5) {
+                    return new Event(desc, parts[3].trim(), parts[4].trim(), done);
+                } else if (parts.length == 4) {
+                    String single = parts[3].trim();
+                    return new Event(desc, single, single, done);
+                } else {
+                    throw new DukeException("Event missing from/to");
+                }
             default:
                 throw new DukeException("Unknown type: " + tag);
         }
     }
+
 
     private static boolean parseDone(String s) throws DukeException {
         if ("1".equals(s)) return true;
