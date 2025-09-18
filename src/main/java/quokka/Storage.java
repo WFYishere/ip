@@ -1,3 +1,5 @@
+package quokka;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -72,7 +74,7 @@ public class Storage {
             case "T":
                 return new Todo(desc, done);
             case "D":
-                if (parts.length < 4) throw new DukeException("Deadline missing /by");
+                if (parts.length < 4) throw new DukeException("quokka.Deadline missing /by");
                 return new Deadline(desc, parts[3].trim(), done);
             case "E":
                 if (parts.length >= 5) {
@@ -81,7 +83,7 @@ public class Storage {
                     String single = parts[3].trim();
                     return new Event(desc, single, single, done);
                 } else {
-                    throw new DukeException("Event missing from/to");
+                    throw new DukeException("quokka.Event missing from/to");
                 }
             default:
                 throw new DukeException("Unknown type: " + tag);

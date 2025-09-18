@@ -9,7 +9,7 @@ if not exist out mkdir out
 javac -cp src\main\java -d out src\main\java\*.java
 
 rem Run with redirected I/O
-java -classpath out Quokka < text-ui-test\input.txt > text-ui-test\ACTUAL.TXT
+java -classpath out quokka.Quokka < text-ui-test\input.txt > text-ui-test\ACTUAL.TXT
 
 rem Compare using fc; suppress diff output
 fc text-ui-test\EXPECTED.TXT text-ui-test\ACTUAL.TXT > NUL

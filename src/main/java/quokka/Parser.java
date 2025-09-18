@@ -1,3 +1,5 @@
+package quokka;
+
 public class Parser {
     public static String commandWord(String input) {
         if (input == null) return "";
