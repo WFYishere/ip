@@ -3,12 +3,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 public class Quokka {
     private static final String LINE = "____________________________________________________________";
     private static final List<Task> tasks = new ArrayList<>();
+    private static final Path SAVE_PATH = Paths.get("data", "duke.txt");
+
 
     public static void main(String[] args) throws IOException {
+        Storage.load(SAVE_PATH, tasks);
         printGreeting();
         runLoop();
         printGoodbye();
@@ -101,6 +107,7 @@ public class Quokka {
         System.out.println(" Now you have " + tasks.size()
                 + (tasks.size() == 1 ? " task" : " tasks") + " in the list.");
         System.out.println(LINE);
+        Storage.save(SAVE_PATH, tasks);
     }
 
     private static void deleteTask(int idx) {
@@ -111,6 +118,7 @@ public class Quokka {
         System.out.println(" Now you have " + tasks.size()
                 + (tasks.size() == 1 ? " task" : " tasks") + " in the list.");
         System.out.println(LINE);
+        Storage.save(SAVE_PATH, tasks);
     }
 
     private static void printList() {
@@ -129,6 +137,7 @@ public class Quokka {
         System.out.println(" Nice! I've marked this task as done:");
         System.out.println("   " + t);
         System.out.println(LINE);
+        Storage.save(SAVE_PATH, tasks);
     }
 
     private static void unmarkTask(int idx) {
@@ -138,6 +147,7 @@ public class Quokka {
         System.out.println(" OK, I've marked this task as not done yet:");
         System.out.println("   " + t);
         System.out.println(LINE);
+        Storage.save(SAVE_PATH, tasks);
     }
 
     private static void printError(String message) {
