@@ -1,22 +1,24 @@
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+package quokka;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 
+public class Event extends Task {
+    protected LocalDate from;
+    protected LocalDate to;
 
-public class Deadline extends Task {
-    protected LocalDate by;
-
-    public Deadline(String description, String by) {
-        super(description, TaskType.DEADLINE);
-        this.by = parseFlexibleDate(by);
+    public Event(String description, String from, String to) {
+        super(description, TaskType.EVENT);
+        this.from = parseFlexibleDate(from);
+        this.to   = parseFlexibleDate(to);
     }
 
-    public Deadline(String description, String by, boolean isDone) {
-        super(description, TaskType.DEADLINE, isDone);
-        this.by = parseFlexibleDate(by);
+    public Event(String description, String from, String to, boolean isDone) {
+        super(description, TaskType.EVENT, isDone);
+        this.from = parseFlexibleDate(from);
+        this.to   = parseFlexibleDate(to);
     }
 
     private static LocalDate parseFlexibleDate(String raw) {
@@ -54,15 +56,14 @@ public class Deadline extends Task {
         throw new IllegalArgumentException("Unrecognized date format: \"" + raw + "\"");
     }
 
-
-
     @Override
     public String toString() {
-        return super.toString() + " (by: " + by.format(DateTimeFormatter.ofPattern("MMM d yyyy")) + ")";
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MMM d yyyy");
+        return super.toString() + " (from: " + from.format(fmt) + " to: " + to.format(fmt) + ")";
     }
 
     @Override
     public String toDataString() {
-        return "D | " + (isDone ? "1" : "0") + " | " + description + " | " + by;
+        return "E | " + (isDone ? "1" : "0") + " | " + description + " | " + from + " | " + to;
     }
 }

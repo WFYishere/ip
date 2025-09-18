@@ -1,3 +1,5 @@
+package quokka;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,7 +10,7 @@ public class Ui {
 
     public void showGreeting() {
         System.out.println(LINE);
-        System.out.println(" Hello! I'm Quokka");
+        System.out.println(" Hello! I'm quokka.Quokka");
         System.out.println(" What can I do for you?");
         System.out.println(LINE);
     }
