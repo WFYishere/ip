@@ -23,7 +23,9 @@ public class Event extends Task {
     }
 
     private static java.time.LocalDate parseFlexibleDate(String raw) {
-        if (raw == null) throw new IllegalArgumentException("date is null");
+        if (raw == null) {
+            throw new IllegalArgumentException("date is null");
+        }
         String s = raw.trim();
 
         try { return java.time.LocalDate.parse(s); } catch (java.time.format.DateTimeParseException ignored) {}
