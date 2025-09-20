@@ -1,5 +1,8 @@
 # Quokka iP
 
+> “Your mind is for having ideas, not holding them.” — David Allen  
+> _(via_ [Getting Things Done](https://gettingthingsdone.com) _)_
+
 Quokka is a text-based task manager that’s *simple*, **fast**, and ~~bug-prone~~ **robust** 😉.
 
 ## Highlights
