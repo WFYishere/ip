@@ -40,6 +40,15 @@ public class Quokka {
 
             try {
                 switch (cmd) {
+                    case "sort": {
+                        java.util.List<Task> list = taskList.view();
+                        list.sort(java.util.Comparator.comparing(t ->
+                            t.getDescription() == null ? "" : t.getDescription().toLowerCase()));
+                        ui.showTasks(list);
+                        Storage.save(SAVE_PATH, taskList.view());
+                        break;
+                    }
+
                     case "bye":
                         isExit = true;
                         break;
