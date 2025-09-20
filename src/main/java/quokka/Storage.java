@@ -1,3 +1,9 @@
+/**
+ * Persists tasks to a human-editable text file and loads them on startup.
+ * Tolerates legacy formats and corrupted lines where possible.
+ */
+
+
 package quokka;
 
 import java.io.BufferedWriter;
@@ -25,6 +31,7 @@ public class Storage {
         }
     }
 
+    /** Loads tasks into the given list. Creates file/dirs if missing; skips malformed lines. */
     public static void load(Path file, List<Task> out) {
         try {
             ensureParent(file);
@@ -47,7 +54,7 @@ public class Storage {
             System.err.println("Warning: failed to load tasks: " + ioe.getMessage());
         }
     }
-
+    /** Saves all tasks to disk in a stable, human-editable format. */
     public static void save(Path file, List<Task> tasks) {
         try {
             ensureParent(file);
