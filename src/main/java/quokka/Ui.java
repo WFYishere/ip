@@ -64,4 +64,17 @@ public class Ui {
         }
         System.out.println(LINE);
     }
+
+    public void showFindResults(java.util.List<Task> matches) {
+        System.out.println(LINE);
+        if (matches.isEmpty()) {
+            System.out.println(" No matching tasks found.");
+        } else {
+            System.out.println(" Here are the matching tasks in your list:");
+            for (int i = 0; i < matches.size(); i++) {
+                System.out.println(" " + (i + 1) + "." + matches.get(i));
+            }
+        }
+        System.out.println(LINE);
+    }
 }
