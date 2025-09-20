@@ -47,6 +47,18 @@ public class Ui {
         System.out.println(LINE);
     }
 
+    public void showWarning(String... messages) {
+        System.out.println(LINE);
+        if (messages != null) {
+            for (String m : messages) {
+                if (m != null && !m.isEmpty()) {
+                    System.out.println(" [!] " + m);
+                }
+            }
+        }
+        System.out.println(LINE);
+    }
+
     public void showAdded(Task task, int size) {
         System.out.println(LINE);
         System.out.println(" Got it. I've added this task:");
