@@ -8,8 +8,12 @@ public class Parser {
     /** Normalize unicode spaces (e.g., NBSP) and trim. */
     private static String normalize(String s) {
         if (s == null) return "";
-        return s.replace('\u00A0', ' ').trim();
+        String t = s.replace('\u00A0', ' ');
+        t = t.trim();
+        t = t.replaceAll("\\s+", " ");
+        return t;
     }
+
 
     public static String commandWord(String input) {
         String s = normalize(input);

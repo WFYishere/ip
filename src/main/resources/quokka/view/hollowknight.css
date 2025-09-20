@@ -1,67 +1,100 @@
-.root {
-    -fx-font-family: "EB Garamond", "Georgia", serif;
-}
-
+/* === Base layout === */
 .hk-pane {
-    -fx-background-color: linear-gradient(to bottom, #111532, #0d1026);
+    -fx-background-color: linear-gradient(to bottom, #0d0d1a, #0b0b16);
 }
 
-.hk-header {
-    -fx-font-size: 16px;
-    -fx-font-weight: 600;
-    -fx-text-fill: #dfe7ff;
-    -fx-padding: 10 12 10 12;
-    -fx-background-color: rgba(255,255,255,0.03);
-    -fx-border-color: rgba(155,218,241,0.18);
+.hk-headerbar {
+    -fx-alignment: center-left;
+    -fx-padding: 10 12;
+    -fx-background-color: #0f1220;
+    -fx-border-color: rgba(255,255,255,0.08);
     -fx-border-width: 0 0 1 0;
 }
 
-.scroll-pane {
-    -fx-background: transparent;
-    -fx-background-color: transparent;
+.hk-header {
+    -fx-text-fill: #f0f4ff;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
 }
 
-.vbox {
-    -fx-padding: 12;
-    -fx-spacing: 10;
+/* === Chat lane === */
+.lane { -fx-background-color: transparent; }
+
+
+/* === Bubbles === */
+.bot-bubble, .user-chip {
+    -fx-padding: 10 14;
+    -fx-background-radius: 16;
+    -fx-font-size: 14px;
+    -fx-line-spacing: 2;
 }
 
 .bot-bubble {
-    -fx-effect: dropshadow(gaussian, rgba(180,220,255,0.3), 14, 0.2, 0, 2);
-}
-
-.user-chip {
-    -fx-font-family: "JetBrains Mono", monospace;
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-text-fill: #e9eef7;
 }
 
 .error-bubble {
-    -fx-background-color: rgba(225,107,107,0.18); /* crimson tint */
-    -fx-border-color: rgba(225,107,107,0.55);
-    -fx-border-radius: 12;
-    -fx-background-radius: 12;
-    -fx-text-fill: #ffdada;
+    -fx-background-color: rgba(220,50,47,0.25);
+    -fx-text-fill: #ffecec;
+    -fx-effect: dropshadow(three-pass-box, rgba(220,50,47,0.5), 12, 0.3, 0, 3);
 }
 
+.user-chip {
+    -fx-background-color: linear-gradient(to bottom right, #4e7fff, #3a6be0);
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+}
+
+/* === Avatars === */
+.avatar {
+    -fx-opacity: 0.9;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 6, 0.3, 0, 2);
+}
+
+/* === Input === */
 .input-bar {
-    -fx-padding: 10;
-    -fx-spacing: 8;
-    -fx-background-color: rgba(255,255,255,0.03);
-    -fx-border-color: rgba(155,218,241,0.18);
+    -fx-background-color: #0f1220;
+    -fx-border-color: rgba(255,255,255,0.08);
     -fx-border-width: 1 0 0 0;
+    -fx-padding: 8 12;
 }
 
-.text-field {
-    -fx-background-radius: 10;
-    -fx-background-color: rgba(255,255,255,0.06);
-    -fx-text-fill: #e9f0ff;
-    -fx-prompt-text-fill: rgba(233,240,255,0.45);
+.hk-input {
+    -fx-background-radius: 12;
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-text-fill: #f0f4ff;
+    -fx-prompt-text-fill: rgba(240,244,255,0.4);
+    -fx-padding: 8 12;
+    -fx-border-color: rgba(255,255,255,0.12);
+    -fx-border-radius: 12;
 }
 
-.button {
-    -fx-background-radius: 10;
-    -fx-background-color: rgba(155,218,241,0.25);
-    -fx-text-fill: #0f1225;
-    -fx-font-weight: 600;
+.hk-input:focused {
+    -fx-border-color: #7aa7ff;
+    -fx-background-color: rgba(255,255,255,0.12);
 }
-.button:hover { -fx-background-color: rgba(155,218,241,0.35); }
-.button:pressed { -fx-background-color: rgba(155,218,241,0.45); }
+
+.hk-send {
+    -fx-background-radius: 12;
+    -fx-background-color: linear-gradient(to bottom right, #4e7fff, #3a6be0);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 14;
+}
+
+.hk-send:hover {
+    -fx-background-color: linear-gradient(to bottom right, #5b88ff, #4774e6);
+}
+
+.scroll-pane,
+.scroll-pane .viewport,
+.scroll-pane .content {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+* {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}

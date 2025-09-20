@@ -73,8 +73,9 @@ public final class Dates {
                 return java.time.LocalDate.parse(s, f);
             } catch (java.time.format.DateTimeParseException ignored) {}
         }
-        return parseFlexibleDate(s);
+        throw new IllegalArgumentException("Unparseable or invalid calendar date: " + raw);
     }
+
 
     /** Validate 24h "HHmm" time like 0000-2359; returns minutes since midnight or throws. */
     public static int validateHHmm(String raw) {
