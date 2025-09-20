@@ -1,3 +1,8 @@
+/**
+ * Lightweight parser that splits the command word and the remainder.
+ */
+
+
 package quokka;
 
 public class Parser {

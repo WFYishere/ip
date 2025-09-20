@@ -1,3 +1,8 @@
+/**
+ * Base type for all tasks. Holds common fields and serialization hooks.
+ */
+
+
 package quokka;
 
 public class Task {

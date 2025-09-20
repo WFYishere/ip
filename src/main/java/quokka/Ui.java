@@ -1,3 +1,8 @@
+/**
+ * Handles all user interaction: printing messages and reading commands from stdin.
+ */
+
+
 package quokka;
 
 import java.io.BufferedReader;
@@ -7,6 +12,8 @@ import java.io.InputStreamReader;
 public class Ui {
     private static final String LINE = "____________________________________________________________";
     private final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+    /** Prints greeting banner. */
 
     public void showGreeting() {
         System.out.println(LINE);

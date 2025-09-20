@@ -1,3 +1,9 @@
+/**
+ * Entry point and main loop of the Quokka chatbot.
+ * Wires together Ui, TaskList, and Storage, and dispatches parsed commands.
+ */
+
+
 package quokka;
 
 import java.io.IOException;
@@ -21,6 +27,7 @@ public class Quokka {
     }
 
     // === Main loop ===
+    /** REPL: reads a line, parses command, executes, until 'bye' or EOF. */
     private static void runLoop() throws IOException {
         boolean isExit = false;
         while (!isExit) {

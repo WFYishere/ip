@@ -1,3 +1,5 @@
+/** A concrete task type. */
+
 package quokka;
 
 public class Todo extends Task {
