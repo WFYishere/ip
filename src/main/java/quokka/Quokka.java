@@ -118,6 +118,13 @@ public class Quokka {
                         ui.showError("Commands: todo, deadline, event, list, delete N, mark N, unmark N, bye");
                         break;
 
+                    case "find": {
+                        if (rest.isEmpty()) throw new DukeException("Usage: find <keyword>");
+                        java.util.List<Task> matches = taskList.find(rest);
+                        ui.showFindResults(matches);
+                        break;
+                    }
+
                     default:
                         ui.showError("☹ OOPS!!! I'm sorry, but I don't know what that means :-(");
                 }

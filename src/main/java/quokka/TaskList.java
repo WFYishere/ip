@@ -14,4 +14,15 @@ public class TaskList {
     public Task get(int idx0) { return tasks.get(idx0); }
     public int size() { return tasks.size(); }
     public List<Task> view() { return tasks; }
+
+    public List<Task> find(String keyword) {
+        String kw = keyword.toLowerCase();
+        List<Task> out = new ArrayList<>();
+        for (Task t : tasks) {
+            if (t.getDescription().toLowerCase().contains(kw)) {
+                out.add(t);
+            }
+        }
+        return out;
+    }
 }
