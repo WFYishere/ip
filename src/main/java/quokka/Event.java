@@ -13,11 +13,14 @@ public class Event extends Task {
 
     public Event(String description, String from, String to) {
         super(description, TaskType.EVENT);
-        this.from = Dates.parseFlexibleDate(from);
-        this.to   = Dates.parseFlexibleDate(to);
+        this.from = quokka.util.Dates.parseStrictDate(from);
+        this.to = quokka.util.Dates.parseStrictDate(to);
+        if (!this.from.isBefore(this.to)) {
+            throw new IllegalArgumentException("Event start must be strictly before end.");
+        }
         assert this.from != null && this.to != null : "Event dates must parse";
-        assert !this.from.isAfter(this.to) : "Event: start date must be <= end date";
     }
+
 
     public Event(String description, String from, String to, boolean isDone) {
         super(description, TaskType.EVENT, isDone);

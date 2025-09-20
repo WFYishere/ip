@@ -7,44 +7,49 @@ package quokka;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.List;
 
 public final class Storage {
 
     /** Split regex that tolerates spaces around the '|' delimiter. */
-    private static final String SPLIT_REGEX = "\\s*\\|\\s*";
+    private static final String SPLIT = "\\s*\\|\\s*";
 
-    private Storage() {
-        // utility class: no instances
-    }
+    private Storage() {}
 
-    /** Removes a UTF-8 BOM if present (common on Windows editors). */
-    private static String stripBom(String s) {
-        if (s != null && !s.isEmpty() && s.charAt(0) == '\uFEFF') {
-            return s.substring(1);
-        }
-        return s;
-    }
-
-    /** Ensures parent directory exists before file I/O. */
-    private static void ensureParent(Path path) throws IOException {
-        Path parent = path.getParent();
-        if (parent != null && !Files.exists(parent)) {
-            Files.createDirectories(parent);
-        }
-    }
-
-    /**
-     * Loads tasks into {@code out}. Creates file/dirs if missing; skips malformed lines.
-     *
-     * @param file path to the data file
-     * @param out  list to receive loaded tasks
-     */
-    public static void load(Path file, List<Task> out) {
+    /** Save all tasks to file atomically (write to temp, then move). */
+    public static void save(Path file, List<Task> tasks) throws DukeException {
         try {
-            ensureParent(file);
+            Path parent = file.getParent();
+            if (parent != null && !Files.exists(parent)) {
+                Files.createDirectories(parent);
+            }
+
+            Path tmp = Files.createTempFile(parent != null ? parent : file.getParent(), "quokka-", ".tmp");
+            try (BufferedWriter bw = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8)) {
+                for (Task t : tasks) {
+                    bw.write(t.toDataString());
+                    bw.newLine();
+                }
+            }
+            // Try atomic move; if not supported, fall back to replace.
+            try {
+                Files.move(tmp, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw new DukeException("Unable to save data: " + e.getMessage());
+        }
+    }
+
+    /** Load tasks from file; creates the file if absent. Corrupted lines are skipped with warnings. */
+    public static void load(Path file, List<Task> out) throws DukeException {
+        try {
+            Path parent = file.getParent();
+            if (parent != null && !Files.exists(parent)) {
+                Files.createDirectories(parent);
+            }
             if (!Files.exists(file)) {
                 Files.createFile(file);
                 return;
@@ -54,90 +59,62 @@ public final class Storage {
             for (String raw : lines) {
                 lineNo++;
                 String line = stripBom(raw).trim();
-                if (line.isEmpty()) {
-                    continue; // ignore blanks
-                }
+                if (line.isEmpty()) continue;
                 try {
                     Task t = parseLine(line);
                     out.add(t);
                 } catch (Exception ex) {
-                    System.err.println("Warning: skip corrupted line " + lineNo + ": \"" + raw + "\"");
+                    System.err.println("Warning: skipped corrupted line " + lineNo + ": \"" + raw + "\" (" + ex.getMessage() + ")");
                 }
             }
-        } catch (IOException ioe) {
-            System.err.println("Warning: failed to load tasks: " + ioe.getMessage());
+        } catch (AccessDeniedException e) {
+            throw new DukeException("Access denied to data file: " + file.toAbsolutePath());
+        } catch (IOException e) {
+            throw new DukeException("Unable to load data: " + e.getMessage());
         }
     }
 
-    /**
-     * Saves all tasks to disk in a stable, human-editable format using each task's {@code toDataString()}.
-     *
-     * @param file  path to write
-     * @param tasks tasks to persist
-     */
-    public static void save(Path file, List<Task> tasks) {
-        try {
-            ensureParent(file);
-            try (BufferedWriter w = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
-                for (Task t : tasks) {
-                    w.write(t.toDataString());
-                    w.newLine();
-                }
-            }
-        } catch (IOException ioe) {
-            System.err.println("Warning: failed to save tasks: " + ioe.getMessage());
-        }
-    }
-
-    /** Parses one persisted line into a concrete {@link Task}. */
+    /** Parse one serialized line into a Task. */
     private static Task parseLine(String line) throws DukeException {
-        String cleaned = stripBom(line.trim());
+        String[] parts = line.split(SPLIT);
+        if (parts.length < 3) throw new DukeException("Too few fields: " + line);
 
-        String[] parts = cleaned.split(SPLIT_REGEX, -1);
-        if (parts.length < 3) {
-            throw new DukeException("Bad line (too few fields): " + line);
-        }
-
-        String tag  = parts[0].trim();
+        String type = parts[0].trim();
         boolean done = parseDone(parts[1].trim());
         String desc = parts[2].trim();
 
-        switch (tag) {
+        Task t;
+        switch (type) {
             case "T":
-                return new Todo(desc, done);
-
-            case "D": {
-                if (parts.length < 4 || parts[3].trim().isEmpty()) {
-                    throw new DukeException("Deadline missing /by");
-                }
-                String by = parts[3].trim();
-                return new Deadline(desc, by, done);
-            }
-
-            case "E": {
-                if (parts.length >= 5 && !parts[3].trim().isEmpty() && !parts[4].trim().isEmpty()) {
-                    return new Event(desc, parts[3].trim(), parts[4].trim(), done);
-                }
-                if (parts.length == 4 && !parts[3].trim().isEmpty()) {
-                    String d = parts[3].trim();
-                    return new Event(desc, d, d, done);
-                }
-                throw new DukeException("Event missing from/to");
-            }
-
+                t = new Todo(desc);
+                break;
+            case "D":
+                if (parts.length < 4) throw new DukeException("Deadline missing date: " + line);
+                t = new Deadline(desc, parts[3].trim());
+                break;
+            case "E":
+                if (parts.length < 5) throw new DukeException("Event missing dates: " + line);
+                t = new Event(desc, parts[3].trim(), parts[4].trim());
+                break;
             default:
-                throw new DukeException("Unknown type: " + tag);
+                throw new DukeException("Unknown type: " + type);
         }
+        if (done) t.markAsDone();
+        return t;
+    }
+
+    /** Remove UTF-8 BOM if present. */
+    private static String stripBom(String s) {
+        if (s != null && !s.isEmpty() && s.charAt(0) == '\uFEFF') {
+            return s.substring(1);
+        }
+        return s;
     }
 
     /** Parses the done flag ("1" or "0"). */
     private static boolean parseDone(String s) throws DukeException {
-        if ("1".equals(s)) {
-            return true;
-        }
-        if ("0".equals(s)) {
-            return false;
-        }
+        if ("1".equals(s)) return true;
+        if ("0".equals(s)) return false;
         throw new DukeException("Invalid done flag: " + s);
     }
 }

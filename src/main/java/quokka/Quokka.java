@@ -36,7 +36,11 @@ public class Quokka {
         this.dataFile = dataFile;
 
         // Load tasks, creating folders/files if missing. Skip malformed lines.
-        Storage.load(this.dataFile, this.taskList.view());
+        try {
+            Storage.load(this.dataFile, this.taskList.view());
+        } catch (DukeException e) {
+            System.err.println("Warning: failed to load tasks: " + e.getMessage());
+        }
     }
 
     /**
@@ -81,6 +85,9 @@ public class Quokka {
                         return Reply.error("OOPS!!! The description of a todo cannot be empty.");
                     }
                     Task t = new Todo(rem);
+                    if (taskList.containsDuplicate(t)) {
+                        return Reply.error("Duplicate todo: an identical task already exists.");
+                    }
                     taskList.add(t);
                     Storage.save(dataFile, taskList.view());
                     return Reply.ok(formatAdded(t, taskList.size()));
@@ -89,16 +96,28 @@ public class Quokka {
                     if (rem.isBlank()) {
                         return Reply.error("OOPS!!! The description of a deadline cannot be empty.");
                     }
+                    if (Parser.countToken(rem, " /by ") > 1) {
+                        return Reply.error("OOPS!!! Duplicate '/by'. Use: deadline <desc> /by <when>");
+                    }
                     int sep = rem.indexOf(" /by ");
                     if (sep < 0) {
-                        return Reply.error("OOPS!!! Missing '/by' in deadline.");
+                        return Reply.error("OOPS!!! Missing '/by' in deadline. Use: deadline <desc> /by <when>");
                     }
                     String desc = rem.substring(0, sep).trim();
-                    String by = rem.substring(sep + 5).trim();
-                    if (desc.isEmpty() || by.isEmpty()) {
+                    String byRaw = rem.substring(sep + 5).trim();
+                    if (desc.isEmpty() || byRaw.isEmpty()) {
                         return Reply.error("OOPS!!! Use: deadline <desc> /by <when>");
                     }
-                    Task t = new Deadline(desc, by); // Dates parsed inside Deadline
+                    Task t;
+                    try {
+                        java.time.LocalDate by = quokka.util.Dates.parseStrictDate(byRaw);
+                        t = new Deadline(desc, by.toString());
+                    } catch (IllegalArgumentException ex) {
+                        return Reply.error("Invalid date for /by: " + ex.getMessage());
+                    }
+                    if (taskList.containsDuplicate(t)) {
+                        return Reply.error("Duplicate deadline: an identical task already exists.");
+                    }
                     taskList.add(t);
                     Storage.save(dataFile, taskList.view());
                     return Reply.ok(formatAdded(t, taskList.size()));
@@ -107,18 +126,36 @@ public class Quokka {
                     if (rem.isBlank()) {
                         return Reply.error("OOPS!!! The description of an event cannot be empty.");
                     }
+                    if (Parser.countToken(rem, " /from ") != 1 || Parser.countToken(rem, " /to ") != 1) {
+                        return Reply.error("OOPS!!! Use exactly one '/from' and one '/to': event <desc> /from <start> /to <end>");
+                    }
                     int f = rem.indexOf(" /from ");
                     int tIdx = rem.indexOf(" /to ");
                     if (f < 0 || tIdx < 0 || tIdx <= f) {
                         return Reply.error("OOPS!!! Use: event <desc> /from <start> /to <end>");
                     }
                     String desc = rem.substring(0, f).trim();
-                    String from = rem.substring(f + 7, tIdx).trim();
-                    String to = rem.substring(tIdx + 5).trim();
-                    if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
+                    String fromRaw = rem.substring(f + 7, tIdx).trim();
+                    String toRaw = rem.substring(tIdx + 5).trim();
+                    if (desc.isEmpty() || fromRaw.isEmpty() || toRaw.isEmpty()) {
                         return Reply.error("OOPS!!! Use: event <desc> /from <start> /to <end>");
                     }
-                    Task t = new Event(desc, from, to); // Dates parsed inside Event
+
+                    Task t;
+                    try {
+                        java.time.LocalDate from = quokka.util.Dates.parseStrictDate(fromRaw);
+                        java.time.LocalDate to = quokka.util.Dates.parseStrictDate(toRaw);
+                        if (!from.isBefore(to)) {
+                            return Reply.error("Event start must be strictly before end.");
+                        }
+                        t = new Event(desc, from.toString(), to.toString());
+                    } catch (IllegalArgumentException ex) {
+                        return Reply.error("Invalid date: " + ex.getMessage());
+                    }
+
+                    if (taskList.containsDuplicate(t)) {
+                        return Reply.error("Duplicate event: an identical task already exists.");
+                    }
                     taskList.add(t);
                     Storage.save(dataFile, taskList.view());
                     return Reply.ok(formatAdded(t, taskList.size()));
@@ -154,7 +191,7 @@ public class Quokka {
                 case "bye":
                     return Reply.ok("Bye. Hope to see you again soon!").withExit();
                 default:
-                    return Reply.error("OOPS!!! I'm sorry, but I don't know what that means :-(");
+                    return Reply.error(ui.showUnknownCommandError(cmd));
             }
         } catch (DukeException e) {
             return Reply.error(e.getMessage());

@@ -44,12 +44,6 @@ public class TaskList {
         return out;
     }
 
-    public String renderAll() {
-        return java.util.stream.IntStream.range(0, tasks.size())
-            .mapToObj(i -> String.format("%d.%s", i + 1, tasks.get(i)))
-            .collect(java.util.stream.Collectors.joining(System.lineSeparator()));
-    }
-
     /** Case-insensitive search by keyword (non-destructive). */
     public java.util.List<Task> findByKeyword(String keyword) {
         if (keyword == null || keyword.isBlank()) {
@@ -65,4 +59,40 @@ public class TaskList {
     public long countDone() {
         return tasks.stream().filter(Task::isDone).count();
     }
+
+    public boolean containsDuplicate(Task candidate) {
+        String keyB = dupKey(candidate);
+        for (Task t : tasks) {
+            if (dupKey(t).equals(keyB)) return true;
+        }
+        return false;
+    }
+
+    private static String dupKey(Task t) {
+        String[] p = t.toDataString().split("\\s*\\|\\s*");
+        if (p.length < 3) {
+            return t.toDataString().trim();
+        }
+        String type = p[0].trim();
+        String desc = p[2].trim().toLowerCase();
+
+        switch (type) {
+            case "T":
+                return "T|" + desc;
+            case "D": {
+                String by = (p.length >= 4) ? p[3].trim() : "";
+                return "D|" + desc + "|" + by;
+            }
+            case "E": {
+                String from = (p.length >= 4) ? p[3].trim() : "";
+                String to   = (p.length >= 5) ? p[4].trim() : "";
+                return "E|" + desc + "|" + from + "|" + to;
+            }
+            default:
+                StringBuilder sb = new StringBuilder(type).append('|').append(desc);
+                for (int i = 3; i < p.length; i++) sb.append('|').append(p[i].trim());
+                return sb.toString();
+        }
+    }
+
 }

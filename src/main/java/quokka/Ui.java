@@ -55,11 +55,6 @@ public class Ui {
         return "Alas… I do not know this incantation: " + safe(cmd);
     }
 
-    public String showErrorString(String message) {
-        return "The Hollow stirs uneasily: " + safe(message);
-    }
-
-
     /** Formats a full task list. */
     public String showTaskList(List<Task> list) {
         if (list == null || list.isEmpty()) {

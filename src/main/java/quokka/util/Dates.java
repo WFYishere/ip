@@ -52,4 +52,43 @@ public final class Dates {
     public static String fmt(LocalDate date) {
         return date.format(OUT_FMT);
     }
+
+    public static java.time.LocalDate parseStrictDate(String raw) {
+        if (raw == null) throw new IllegalArgumentException("date is null");
+        String s = raw.trim();
+        java.time.format.ResolverStyle STRICT = java.time.format.ResolverStyle.STRICT;
+
+        String[] patterns = new String[]{
+            "uuuu-MM-dd", "d/M/uuuu", "d-M-uuuu", "d.M.uuuu",
+            "uuuu/M/d", "uuuu-M-d", "M/d/uuuu", "d MMM uuuu", "MMM d uuuu"
+        };
+        for (String p : patterns) {
+            try {
+                java.time.format.DateTimeFormatter f =
+                    new java.time.format.DateTimeFormatterBuilder()
+                        .parseCaseInsensitive()
+                        .appendPattern(p)
+                        .toFormatter()
+                        .withResolverStyle(STRICT);
+                return java.time.LocalDate.parse(s, f);
+            } catch (java.time.format.DateTimeParseException ignored) {}
+        }
+        return parseFlexibleDate(s);
+    }
+
+    /** Validate 24h "HHmm" time like 0000-2359; returns minutes since midnight or throws. */
+    public static int validateHHmm(String raw) {
+        if (raw == null) throw new IllegalArgumentException("time is null");
+        String s = raw.trim();
+        if (!s.matches("\\d{4}")) {
+            throw new IllegalArgumentException("Invalid time, expected HHmm: " + raw);
+        }
+        int hh = Integer.parseInt(s.substring(0, 2));
+        int mm = Integer.parseInt(s.substring(2, 4));
+        if (hh < 0 || hh > 23 || mm < 0 || mm > 59) {
+            throw new IllegalArgumentException("Invalid time, expected 0000..2359: " + raw);
+        }
+        return hh * 60 + mm;
+    }
+
 }
