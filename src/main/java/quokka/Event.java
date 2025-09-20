@@ -14,12 +14,16 @@ public class Event extends Task {
         super(description, TaskType.EVENT);
         this.from = parseFlexibleDate(from);
         this.to   = parseFlexibleDate(to);
+        assert this.from != null && this.to != null : "Event dates must parse";
+        assert !this.from.isAfter(this.to) : "Event: start date must be <= end date";
     }
 
     public Event(String description, String from, String to, boolean isDone) {
         super(description, TaskType.EVENT, isDone);
         this.from = parseFlexibleDate(from);
         this.to   = parseFlexibleDate(to);
+        assert this.from != null && this.to != null : "Event dates must parse";
+        assert !this.from.isAfter(this.to) : "Event: start date must be <= end date";
     }
 
     private static java.time.LocalDate parseFlexibleDate(String raw) {
