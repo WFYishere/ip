@@ -1,0 +1,4 @@
+T | 0 | book
+T | 0 | buy milk
+D | 0 | submit assignment | 2025-09-30
+E | 0 | hackathon | 2025-09-10 | 2025-09-12
