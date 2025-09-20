@@ -40,6 +40,14 @@ public class Quokka {
 
             try {
                 switch (cmd) {
+
+                    /*
+                     * AI-ASSISTED (2025-09-20):
+                     * This 'sort' command structure was suggested via ChatGPT to achieve the Category C "Sort" extension
+                     * with minimal code changes (no new classes/files). Behavior: case-insensitive alphabetical sort by
+                     * task description, then display and persist. See AI.md for the log of AI-assisted usage.
+                     */
+
                     case "sort": {
                         java.util.List<Task> list = taskList.view();
                         list.sort(java.util.Comparator.comparing(t ->
