@@ -14,7 +14,16 @@ public class TaskList {
     public TaskList() { this.tasks = new ArrayList<>(); }
     public TaskList(List<Task> existing) { this.tasks = existing; }
     /** Returns tasks whose description contains the keyword (case-insensitive). */
-    public void add(Task t) { tasks.add(t); }
+    public void add(Task... items) {
+        if (items == null) {
+            return;
+        }
+        for (Task t : items) {
+            if (t != null) {
+                tasks.add(t);
+            }
+        }
+    }
     /** Returns tasks whose description contains the keyword (case-insensitive). */
     public Task removeAt(int idx0) { return tasks.remove(idx0); }
     /** Returns tasks whose description contains the keyword (case-insensitive). */

@@ -34,9 +34,16 @@ public class Ui {
         System.out.println(LINE);
     }
 
-    public void showError(String msg) {
+    /** Shows one or more error lines (each on its own line). */
+    public void showError(String... messages) {
         System.out.println(LINE);
-        System.out.println(" " + msg);
+        if (messages != null) {
+            for (String m : messages) {
+                if (m != null && !m.isEmpty()) {
+                    System.out.println(" " + m);
+                }
+            }
+        }
         System.out.println(LINE);
     }
 
