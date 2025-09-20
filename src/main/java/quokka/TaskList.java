@@ -43,4 +43,26 @@ public class TaskList {
         }
         return out;
     }
+
+    public String renderAll() {
+        return java.util.stream.IntStream.range(0, tasks.size())
+            .mapToObj(i -> String.format("%d.%s", i + 1, tasks.get(i)))
+            .collect(java.util.stream.Collectors.joining(System.lineSeparator()));
+    }
+
+    /** Case-insensitive search by keyword (non-destructive). */
+    public java.util.List<Task> findByKeyword(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return java.util.List.of();
+        }
+        final String k = keyword.toLowerCase();
+        return tasks.stream()
+            .filter(t -> t.getDescription().toLowerCase().contains(k))
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    /** Count how many tasks are marked done. */
+    public long countDone() {
+        return tasks.stream().filter(Task::isDone).count();
+    }
 }
