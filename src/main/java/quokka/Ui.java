@@ -1,106 +1,119 @@
-/**
- * Handles all user interaction: printing messages and reading commands from stdin.
- */
-
-
 package quokka;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Scanner;
 
+/**
+ * Handles user interaction concerns.
+ */
 public class Ui {
-    private static final String LINE = "____________________________________________________________";
-    private final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-    /** Prints greeting banner. */
+    private static final String DIVIDER = "____________________________________________________________";
+    private final Scanner in = new Scanner(System.in);
 
-    public void showGreeting() {
-        System.out.println(LINE);
-        System.out.println(" Hello! I'm quokka.Quokka");
-        System.out.println(" What can I do for you?");
-        System.out.println(LINE);
+    /* ===================== CLI helpers ===================== */
+
+    /** Reads one line from stdin. Returns null on EOF. */
+    public String readCommand() {
+        try {
+            if (in.hasNextLine()) {
+                return in.nextLine();
+            }
+            return null; // EOF
+        } catch (Exception e) {
+            return null;
+        }
     }
 
-    public void showLine() { System.out.println(LINE); }
-
-    public String readCommand() throws IOException {
-        return in.readLine();
-    }
-
+    /** Prints a friendly goodbye (CLI). GUI uses the string-returning variant instead. */
     public void showGoodbye() {
-        System.out.println(LINE);
+        System.out.println(DIVIDER);
         System.out.println(" Bye. Hope to see you again soon!");
-        System.out.println(LINE);
+        System.out.println(DIVIDER);
     }
 
-    /** Shows one or more error lines (each on its own line). */
-    public void showError(String... messages) {
-        System.out.println(LINE);
-        if (messages != null) {
-            for (String m : messages) {
-                if (m != null && !m.isEmpty()) {
-                    System.out.println(" " + m);
-                }
-            }
+    /** Prints an error block to the console (CLI). In GUI, pass the same message into a bot bubble. */
+    public void showError(String message) {
+        System.out.println(DIVIDER);
+        System.out.println(" " + message);
+        System.out.println(DIVIDER);
+    }
+
+    /* ===================== String-returning helpers (GUI or CLI formatting) ===================== */
+
+    public String getWelcomeMessage() {
+        return "Hello! I'm Quokka\nWhat can I do for you?";
+    }
+
+    /** Bye text used by GUI. */
+    public String byeMessage() {
+        return "Bye. Hope to see you again soon!";
+    }
+
+    /** Generic "unknown command" error string. */
+    public String showUnknownCommandError(String cmd) {
+        return "OOPS!!! I'm sorry, but I don't know what that means: " + safe(cmd);
+    }
+
+    /** Wraps a message with the standard OOPS prefix (string form). */
+    public String showErrorString(String message) {
+        return "OOPS!!! " + safe(message);
+    }
+
+    /** Formats a full task list. */
+    public String showTaskList(List<Task> list) {
+        if (list == null || list.isEmpty()) {
+            return "Your list is empty.";
         }
-        System.out.println(LINE);
-    }
-
-    public void showWarning(String... messages) {
-        System.out.println(LINE);
-        if (messages != null) {
-            for (String m : messages) {
-                if (m != null && !m.isEmpty()) {
-                    System.out.println(" [!] " + m);
-                }
-            }
+        StringBuilder sb = new StringBuilder("Here are the tasks in your list:\n");
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(i + 1).append('.').append(list.get(i)).append('\n');
         }
-        System.out.println(LINE);
+        return rstrip(sb);
     }
 
-    public void showAdded(Task task, int size) {
-        System.out.println(LINE);
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + task);
-        System.out.println(" Now you have " + size + (size == 1 ? " task" : " tasks") + " in the list.");
-        System.out.println(LINE);
-    }
-
-    public void showDeleted(Task t, int size) {
-        System.out.println(LINE);
-        System.out.println(" Noted. I've removed this task:");
-        System.out.println("   " + t);
-        System.out.println(" Now you have " + size + (size == 1 ? " task" : " tasks") + " in the list.");
-        System.out.println(LINE);
-    }
-
-    public void showMark(Task t, boolean done) {
-        System.out.println(LINE);
-        System.out.println(done ? " Nice! I've marked this task as done:" :
-                " OK, I've marked this task as not done yet:");
-        System.out.println("   " + t);
-        System.out.println(LINE);
-    }
-
-    public void showTasks(java.util.List<Task> tasks) {
-        System.out.println(LINE);
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + tasks.get(i));
+    /** Formats matching tasks (for 'find'). */
+    public String showMatchingTasks(List<Task> list) {
+        if (list == null || list.isEmpty()) {
+            return "No matching tasks found.";
         }
-        System.out.println(LINE);
+        StringBuilder sb = new StringBuilder("Here are the matching tasks in your list:\n");
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(i + 1).append('.').append(list.get(i)).append('\n');
+        }
+        return rstrip(sb);
     }
 
-    public void showFindResults(java.util.List<Task> matches) {
-        System.out.println(LINE);
-        if (matches.isEmpty()) {
-            System.out.println(" No matching tasks found.");
-        } else {
-            System.out.println(" Here are the matching tasks in your list:");
-            for (int i = 0; i < matches.size(); i++) {
-                System.out.println(" " + (i + 1) + "." + matches.get(i));
-            }
+    /** Added-task message. */
+    public String formatAdded(Task t, int newSize) {
+        return "Got it. I've added this task:\n  " + t + "\nNow you have " + newSize + " tasks in the list.";
+    }
+
+    /** Marked-done message. */
+    public String formatMarked(Task t) {
+        return "Nice! I've marked this task as done:\n  " + t;
+    }
+
+    /** Marked-undone message. */
+    public String formatUnmarked(Task t) {
+        return "OK, I've marked this task as not done yet:\n  " + t;
+    }
+
+    /** Deleted-task message. */
+    public String formatDeleted(Task t, int newSize) {
+        return "Noted. I've removed this task:\n  " + t + "\nNow you have " + newSize + " tasks in the list.";
+    }
+
+    /* ===================== small utilities ===================== */
+    private static String rstrip(StringBuilder sb) {
+        int len = sb.length();
+        while (len > 0 && Character.isWhitespace(sb.charAt(len - 1))) {
+            len--;
         }
-        System.out.println(LINE);
+        return sb.substring(0, len);
+    }
+
+    private static String safe(String s) {
+        return s == null ? "" : s;
     }
 }
