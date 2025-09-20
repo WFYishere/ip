@@ -42,23 +42,23 @@ public class Ui {
     /* ===================== String-returning helpers (GUI or CLI formatting) ===================== */
 
     public String getWelcomeMessage() {
-        return "Hello! I'm Quokka\nWhat can I do for you?";
+        return "Greetings, wanderer. I am the Chronicler of Quokka Hollow.\n" +
+            "What tale shall we inscribe today?";
     }
 
-    /** Bye text used by GUI. */
     public String byeMessage() {
-        return "Bye. Hope to see you again soon!";
+        return "Farewell, brave one. May the path ahead be lit, even in shadow.";
     }
 
     /** Generic "unknown command" error string. */
     public String showUnknownCommandError(String cmd) {
-        return "OOPS!!! I'm sorry, but I don't know what that means: " + safe(cmd);
+        return "Alas… I do not know this incantation: " + safe(cmd);
     }
 
-    /** Wraps a message with the standard OOPS prefix (string form). */
     public String showErrorString(String message) {
-        return "OOPS!!! " + safe(message);
+        return "The Hollow stirs uneasily: " + safe(message);
     }
+
 
     /** Formats a full task list. */
     public String showTaskList(List<Task> list) {
@@ -84,25 +84,24 @@ public class Ui {
         return rstrip(sb);
     }
 
-    /** Added-task message. */
     public String formatAdded(Task t, int newSize) {
-        return "Got it. I've added this task:\n  " + t + "\nNow you have " + newSize + " tasks in the list.";
+        return "A new entry etched into the Chronicle:\n  " + t +
+            "\nYou now carry " + newSize + " burdens.";
     }
 
-    /** Marked-done message. */
     public String formatMarked(Task t) {
-        return "Nice! I've marked this task as done:\n  " + t;
+        return "The deed is done, etched with certainty:\n  " + t;
     }
 
-    /** Marked-undone message. */
     public String formatUnmarked(Task t) {
-        return "OK, I've marked this task as not done yet:\n  " + t;
+        return "The ink fades… the task remains unfinished:\n  " + t;
     }
 
-    /** Deleted-task message. */
     public String formatDeleted(Task t, int newSize) {
-        return "Noted. I've removed this task:\n  " + t + "\nNow you have " + newSize + " tasks in the list.";
+        return "A memory erased from the Chronicle:\n  " + t +
+            "\nOnly " + newSize + " tales remain.";
     }
+
 
     /* ===================== small utilities ===================== */
     private static String rstrip(StringBuilder sb) {

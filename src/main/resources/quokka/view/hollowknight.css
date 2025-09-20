@@ -1,8 +1,5 @@
 .root {
-    -fx-font-family: "Inter", "Segoe UI", system-ui, sans-serif;
-    -fx-base: #0f1225;
-    -fx-background-color: #0f1225;
-    -fx-text-fill: #e9f0ff;
+    -fx-font-family: "EB Garamond", "Georgia", serif;
 }
 
 .hk-pane {
@@ -30,20 +27,11 @@
 }
 
 .bot-bubble {
-    -fx-background-color: rgba(26,31,77,0.85); /* indigo */
-    -fx-background-radius: 14;
-    -fx-padding: 10 12;
-    -fx-text-fill: #e9f0ff;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 12, 0.2, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(180,220,255,0.3), 14, 0.2, 0, 2);
 }
 
 .user-chip {
-    -fx-background-color: rgba(155,218,241,0.14); /* soft cyan */
-    -fx-background-radius: 12;
-    -fx-padding: 6 10;
-    -fx-text-fill: #cfeaff;
-    -fx-font-family: "JetBrains Mono", "Cascadia Code", monospace;
-    -fx-font-size: 12px;
+    -fx-font-family: "JetBrains Mono", monospace;
 }
 
 .error-bubble {
