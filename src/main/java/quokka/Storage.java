@@ -45,7 +45,7 @@ public class Storage {
                 if (line.isEmpty()) continue;
                 try {
                     Task t = parseLine(line);
-                    if (t != null) out.add(t);
+                    out.add(t);
                 } catch (Exception ex) {
                     System.err.println("Warning: skip corrupted line: \"" + raw + "\"");
                 }
