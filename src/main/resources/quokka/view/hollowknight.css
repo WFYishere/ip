@@ -82,7 +82,6 @@
     -fx-font-weight: bold;
     -fx-padding: 8 14;
 }
-
 .hk-send:hover {
     -fx-background-color: linear-gradient(to bottom right, #5b88ff, #4774e6);
 }
