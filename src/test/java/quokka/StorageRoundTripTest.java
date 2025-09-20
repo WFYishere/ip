@@ -27,13 +27,13 @@ public class StorageRoundTripTest {
         Storage.load(file, in);
 
         assertEquals(3, in.size());
-        assertTrue(in.get(0) instanceof Todo);
+        assertInstanceOf(Todo.class, in.get(0));
         assertEquals("read book", in.get(0).getDescription());
         assertFalse(in.get(0).isDone());
-        assertTrue(in.get(1) instanceof Deadline);
+        assertInstanceOf(Deadline.class, in.get(1));
         assertEquals("return book", in.get(1).getDescription());
         assertTrue(in.get(1).isDone());
-        assertTrue(in.get(2) instanceof Event);
+        assertInstanceOf(Event.class, in.get(2));
         assertEquals("project", in.get(2).getDescription());
         assertFalse(in.get(2).isDone());
     }
