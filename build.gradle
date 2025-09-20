@@ -39,7 +39,7 @@ jar {
 }
 
 shadowJar {
-    archiveBaseName = "duke"
+    archiveFileName = 'Duke.jar'
     archiveClassifier = null
     manifest {
         attributes('Main-Class': application.mainClass.get())
