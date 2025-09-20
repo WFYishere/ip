@@ -42,7 +42,9 @@ public class Storage {
             List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
             for (String raw : lines) {
                 String line = raw.trim();
-                if (line.isEmpty()) continue;
+                if (line.isEmpty()) {
+                    continue;
+                }
                 try {
                     Task t = parseLine(line);
                     out.add(t);
@@ -73,7 +75,9 @@ public class Storage {
     private static Task parseLine(String line) throws DukeException {
         String cleaned = stripBom(line.trim());
         String[] parts = cleaned.split(SEP_REGEX);
-        if (parts.length < 3) throw new DukeException("Bad line: " + line);
+        if (parts.length < 3) {
+            throw new DukeException("Bad line: " + line);
+        }
         String tag = parts[0].trim();
         boolean done = parseDone(parts[1].trim());
         String desc = parts[2].trim();
@@ -81,7 +85,9 @@ public class Storage {
             case "T":
                 return new Todo(desc, done);
             case "D":
-                if (parts.length < 4) throw new DukeException("quokka.Deadline missing /by");
+                if (parts.length < 4) {
+                    throw new DukeException("quokka.Deadline missing /by");
+                }
                 return new Deadline(desc, parts[3].trim(), done);
             case "E":
                 if (parts.length >= 5) {
@@ -99,8 +105,12 @@ public class Storage {
 
 
     private static boolean parseDone(String s) throws DukeException {
-        if ("1".equals(s)) return true;
-        if ("0".equals(s)) return false;
+        if ("1".equals(s)) {
+            return true;
+        }
+        if ("0".equals(s)) {
+            return false;
+        }
         throw new DukeException("Invalid done flag: " + s);
     }
 }

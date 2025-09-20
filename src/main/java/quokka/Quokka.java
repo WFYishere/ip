@@ -32,7 +32,9 @@ public class Quokka {
         boolean isExit = false;
         while (!isExit) {
             String line = ui.readCommand();
-            if (line == null) break; // EOF
+            if (line == null) {
+                break;
+            }
             String cmd = Parser.commandWord(line).toLowerCase();
             String rest = Parser.remainder(line);
 
@@ -47,7 +49,9 @@ public class Quokka {
                         break;
 
                     case "todo": {
-                        if (rest.isEmpty()) throw new DukeException("☹ OOPS!!! The description of a todo cannot be empty.");
+                        if (rest.isEmpty()) {
+                            throw new DukeException(":( OOPS!!! The description of a todo cannot be empty.");
+                        }
                         Task t = new Todo(rest);
                         taskList.add(t);
                         ui.showAdded(t, taskList.size());
@@ -93,7 +97,9 @@ public class Quokka {
                     }
 
                     case "delete": {
-                        if (rest.isEmpty()) throw new DukeException("Usage: delete <task-number>");
+                        if (rest.isEmpty()) {
+                            throw new DukeException("Usage: delete <task-number>");
+                        }
                         int idx0 = parseOneBasedIndex(rest);
                         Task removed = taskList.removeAt(idx0);
                         ui.showDeleted(removed, taskList.size());
@@ -102,7 +108,9 @@ public class Quokka {
                     }
 
                     case "mark": {
-                        if (rest.isEmpty()) throw new DukeException("Usage: mark <task-number>");
+                        if (rest.isEmpty()) {
+                            throw new DukeException("Usage: mark <task-number>");
+                        }
                         int idx0 = parseOneBasedIndex(rest);
                         Task t = taskList.get(idx0);
                         t.markAsDone();
@@ -112,7 +120,9 @@ public class Quokka {
                     }
 
                     case "unmark": {
-                        if (rest.isEmpty()) throw new DukeException("Usage: unmark <task-number>");
+                        if (rest.isEmpty()) {
+                            throw new DukeException("Usage: unmark <task-number>");
+                        }
                         int idx0 = parseOneBasedIndex(rest);
                         Task t = taskList.get(idx0);
                         t.markAsNotDone();
@@ -126,7 +136,9 @@ public class Quokka {
                         break;
 
                     case "find": {
-                        if (rest.isEmpty()) throw new DukeException("Usage: find <keyword>");
+                        if (rest.isEmpty()) {
+                            throw new DukeException("Usage: find <keyword>");
+                        }
                         java.util.List<Task> matches = taskList.find(rest);
                         ui.showFindResults(matches);
                         break;
@@ -144,7 +156,9 @@ public class Quokka {
     // === Helpers ===
 
     private static String[] splitOnceFlexible(String input, String key) {
-        if (input == null) return null;
+        if (input == null) {
+            return null;
+        }
         String s = input.trim();
         String token = " " + key + " ";
         int i = s.indexOf(token);
@@ -152,7 +166,9 @@ public class Quokka {
             // try variants without trailing space
             token = " " + key;
             i = s.indexOf(token);
-            if (i < 0) return null;
+            if (i < 0) {
+                return null;
+            }
             String left = s.substring(0, i).trim();
             String right = s.substring(i + token.length()).trim();
             return new String[]{left, right};

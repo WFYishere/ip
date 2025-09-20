@@ -32,4 +32,3 @@ More info:
 * Main class: `quokka.Quokka`
 * Releases: [Download Duke.jar](https://github.com/WFYishere/ip/releases) 
 
-```
