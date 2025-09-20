@@ -94,8 +94,6 @@ shadowJar {
     exclude 'module-info.class'
 }
 
-
-
 run{
     standardInput = System.in
 }
