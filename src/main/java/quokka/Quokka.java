@@ -1,6 +1,5 @@
 package quokka;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -43,7 +42,7 @@ public class Quokka {
      * Main CLI loop (text UI).
      * Prints the greeting, then processes lines until "bye".
      */
-    public void run() throws IOException {
+    public void run() {
         printGreeting();
         while (true) {
             String line = ui.readCommand();
@@ -78,7 +77,7 @@ public class Quokka {
                 }
                 case "todo": {
                     if (rem.isBlank()) {
-                        return Reply.error("OOPS!!! The description of a todo cannot be empty.");
+                        return Reply.error(ui.showErrorString("The description of a todo cannot be empty."));
                     }
                     Task t = new Todo(rem);
                     taskList.add(t);
@@ -87,16 +86,16 @@ public class Quokka {
                 }
                 case "deadline": {
                     if (rem.isBlank()) {
-                        return Reply.error("OOPS!!! The description of a deadline cannot be empty.");
+                        return Reply.error(ui.showErrorString("The description of a todo cannot be empty."));
                     }
                     int sep = rem.indexOf(" /by ");
                     if (sep < 0) {
-                        return Reply.error("OOPS!!! Missing '/by' in deadline.");
+                        return Reply.error(ui.showErrorString("Missing '/by' in deadline."));
                     }
                     String desc = rem.substring(0, sep).trim();
                     String by = rem.substring(sep + 5).trim();
                     if (desc.isEmpty() || by.isEmpty()) {
-                        return Reply.error("OOPS!!! Use: deadline <desc> /by <when>");
+                        return Reply.error(ui.showErrorString("Use: deadline <desc> /by <when>"));
                     }
                     Task t = new Deadline(desc, by); // Dates parsed inside Deadline
                     taskList.add(t);
@@ -105,18 +104,18 @@ public class Quokka {
                 }
                 case "event": {
                     if (rem.isBlank()) {
-                        return Reply.error("OOPS!!! The description of an event cannot be empty.");
+                        return Reply.error(ui.showErrorString("OOPS!!! The description of an event cannot be empty."));
                     }
                     int f = rem.indexOf(" /from ");
                     int tIdx = rem.indexOf(" /to ");
                     if (f < 0 || tIdx < 0 || tIdx <= f) {
-                        return Reply.error("OOPS!!! Use: event <desc> /from <start> /to <end>");
+                        return Reply.error(ui.showErrorString("Use: event <desc> /from <start> /to <end>"));
                     }
                     String desc = rem.substring(0, f).trim();
                     String from = rem.substring(f + 7, tIdx).trim();
                     String to = rem.substring(tIdx + 5).trim();
                     if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
-                        return Reply.error("OOPS!!! Use: event <desc> /from <start> /to <end>");
+                        return Reply.error(ui.showErrorString("Use: event <desc> /from <start> /to <end>"));
                     }
                     Task t = new Event(desc, from, to); // Dates parsed inside Event
                     taskList.add(t);
@@ -146,7 +145,7 @@ public class Quokka {
                 }
                 case "find": {
                     if (rem.isBlank()) {
-                        return Reply.error("OOPS!!! Provide a keyword to find.");
+                        return Reply.error(ui.showErrorString("Provide a keyword to find."));
                     }
                     List<Task> matches = taskList.find(rem);
                     return Reply.ok(renderTaskList(matches, "Here are the matching tasks in your list:"));
@@ -154,14 +153,14 @@ public class Quokka {
                 case "bye":
                     return Reply.ok("Bye. Hope to see you again soon!").withExit();
                 default:
-                    return Reply.error("OOPS!!! I'm sorry, but I don't know what that means :-(");
+                    return Reply.error(ui.showUnknownCommandError(cmd));
             }
         } catch (DukeException e) {
-            return Reply.error(e.getMessage());
-        } catch (IllegalArgumentException e) { // e.g., date parse issues from Deadline/Event
-            return Reply.error("OOPS!!! " + e.getMessage());
+            return Reply.error(ui.showErrorString(e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return Reply.error(ui.showErrorString(e.getMessage()));
         } catch (Exception e) {
-            return Reply.error("OOPS!!! " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            return Reply.error(ui.showErrorString(e.getClass().getSimpleName() + ": " + e.getMessage()));
         }
     }
 

@@ -24,6 +24,7 @@ public class Main extends Application {
 
     private VBox dialog;
     private ScrollPane scroller;
+    private javafx.scene.image.Image appIcon;
 
     @Override
     public void start(Stage stage) {
@@ -31,9 +32,21 @@ public class Main extends Application {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("hk-pane");
 
+        // ----- Header (icon + title) -----
+        javafx.scene.image.ImageView hv = new javafx.scene.image.ImageView(appIcon);
+        hv.setFitWidth(18);
+        hv.setFitHeight(18);
+        hv.setPreserveRatio(true);
+
+        javafx.scene.shape.Circle hClip = new javafx.scene.shape.Circle(9, 9, 9);
+        hv.setClip(hClip);
+
         Label header = new Label("Quokka");
         header.getStyleClass().add("hk-header");
-        root.setTop(header);
+
+        HBox headerBox = new HBox(hv, header);
+        headerBox.getStyleClass().add("header-box");
+        root.setTop(headerBox);
 
         // ----- Dialog Area (asymmetric) -----
         dialog = new VBox();
@@ -86,8 +99,12 @@ public class Main extends Application {
         // ----- Scene / Stage -----
         Scene scene = new Scene(root, 420, 560);
         scene.getStylesheets().add(
-            getClass().getResource("/quokka/view/hollowknight.css").toExternalForm()
+            getClass().getResource("/quokka/view/view/hollowknight.css").toExternalForm()
         );
+
+        appIcon = new javafx.scene.image.Image(
+            getClass().getResourceAsStream("/quokka/img/knight.png"));
+        stage.getIcons().add(appIcon);
 
         stage.setTitle("Quokka");
         stage.setMinWidth(360);
@@ -107,10 +124,17 @@ public class Main extends Application {
         if (isError || text.startsWith("OOPS!!!")) {
             bubble.getStyleClass().add("error-bubble");
         }
-        bubble.maxWidthProperty().bind(scroller.widthProperty().subtract(28));
+        bubble.maxWidthProperty().bind(scroller.widthProperty().subtract(56));
 
-        HBox row = new HBox(bubble);
-        row.setAlignment(Pos.TOP_LEFT);
+        javafx.scene.image.ImageView avatar = new javafx.scene.image.ImageView(appIcon);
+        avatar.setFitWidth(28);
+        avatar.setFitHeight(28);
+        avatar.setPreserveRatio(true);
+        javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(14, 14, 14);
+        avatar.setClip(clip);
+
+        HBox row = new HBox(avatar, bubble);
+        row.getStyleClass().add("row-bot");
         dialog.getChildren().add(row);
     }
 
@@ -121,7 +145,7 @@ public class Main extends Application {
         chip.maxWidthProperty().bind(scroller.widthProperty().subtract(28));
 
         HBox row = new HBox(chip);
-        row.setAlignment(Pos.TOP_RIGHT);
+        row.getStyleClass().add("row-user");
         dialog.getChildren().add(row);
     }
 }
