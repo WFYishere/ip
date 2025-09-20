@@ -87,12 +87,13 @@ jar {
 }
 
 shadowJar {
-    archiveFileName = 'Duke.jar'
+    archiveFileName = 'Quokka.jar'
     archiveClassifier = null
-    manifest {
-        attributes('Main-Class': application.mainClass.get())
-    }
+    manifest { attributes('Main-Class': application.mainClass.get()) }
+    mergeServiceFiles()
+    exclude 'module-info.class'
 }
+
 
 
 run{
