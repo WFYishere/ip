@@ -25,3 +25,11 @@ deadline return book /by 2019-10-15
 event project /from 2019-12-01 /to 2019-12-02
 list
 bye
+````
+
+More info:
+
+* Main class: `quokka.Quokka`
+* Releases: [Download Duke.jar](https://github.com/WFYishere/ip/releases) 
+
+```
