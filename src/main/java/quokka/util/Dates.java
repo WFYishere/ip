@@ -63,6 +63,14 @@ public final class Dates {
         return date.format(OUT_FMT);
     }
 
+    /**
+     * Parse a date using strict patterns (yyyy-MM-dd, d/M/yyyy, d MMM yyyy, etc.).
+     * Rejects invalid calendar dates (e.g., 2025-02-30).
+     *
+     * @param raw user input string
+     * @return parsed LocalDate
+     * @throws IllegalArgumentException if format is unrecognized or invalid
+     */
     public static java.time.LocalDate parseStrictDate(String raw) {
         if (raw == null) throw new IllegalArgumentException("date is null");
         String s = raw.trim();
