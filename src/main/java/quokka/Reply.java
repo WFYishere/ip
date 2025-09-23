@@ -15,14 +15,17 @@ public class Reply {
         this.exit = exit;
     }
 
+    /** Create a successful reply (not an error, not exit). */
     public static Reply ok(String message) {
         return new Reply(message, false, false);
     }
 
+    /** Create an error reply (used for styling), but not exit. */
     public static Reply error(String message) {
         return new Reply(message, true, false);
     }
 
+    /** Return a copy of this reply that also signals application exit. */
     public Reply withExit() {
         return new Reply(this.message, this.error, true);
     }
