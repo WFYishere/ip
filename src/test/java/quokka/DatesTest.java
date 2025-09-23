@@ -38,4 +38,11 @@ class DatesTest {
         assertThrows(IllegalArgumentException.class, () -> Dates.validateHHmm("abcd"));
         assertThrows(IllegalArgumentException.class, () -> Dates.validateHHmm("9999"));
     }
+
+    @Test
+    void fmt_formatsShortMonthStyle() {
+        assertEquals("Sep 10 2025",
+            Dates.fmt(java.time.LocalDate.of(2025, 9, 10)));
+    }
+
 }
