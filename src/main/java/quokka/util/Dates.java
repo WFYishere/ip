@@ -1,3 +1,13 @@
+/**
+ * Parse a date using strict patterns (yyyy-MM-dd, d/M/yyyy,
+ * d MMM yyyy, etc.). Rejects invalid calendar dates.
+ *
+ * @param raw user input string
+ * @return parsed LocalDate
+ * @throws IllegalArgumentException if format is unrecognized/invalid
+ */
+
+
 package quokka.util;
 
 import java.time.LocalDate;
@@ -77,7 +87,13 @@ public final class Dates {
     }
 
 
-    /** Validate 24h "HHmm" time like 0000-2359; returns minutes since midnight or throws. */
+    /**
+     * Validate a 24-hour HHmm time and return minutes since 00:00.
+     *
+     * @param raw four-digit time string in HHmm
+     * @return minutes in [0, 1439]
+     * @throws IllegalArgumentException if not HHmm or out of range
+     */
     public static int validateHHmm(String raw) {
         if (raw == null) throw new IllegalArgumentException("time is null");
         String s = raw.trim();
