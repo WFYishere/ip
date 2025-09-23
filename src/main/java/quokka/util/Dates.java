@@ -86,7 +86,6 @@ public final class Dates {
         throw new IllegalArgumentException("Unparseable or invalid calendar date: " + raw);
     }
 
-
     /**
      * Validate a 24-hour HHmm time and return minutes since 00:00.
      *

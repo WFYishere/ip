@@ -5,16 +5,14 @@ package quokka;
 import java.time.LocalDate;
 import quokka.util.Dates;
 
-
-
 public class Event extends Task {
     protected LocalDate from;
     protected LocalDate to;
 
     public Event(String description, String from, String to) {
         super(description, TaskType.EVENT);
-        this.from = quokka.util.Dates.parseStrictDate(from);
-        this.to = quokka.util.Dates.parseStrictDate(to);
+        this.from = Dates.parseStrictDate(from);
+        this.to   = Dates.parseStrictDate(to);
         if (!this.from.isBefore(this.to)) {
             throw new IllegalArgumentException("Event start must be strictly before end.");
         }
