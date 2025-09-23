@@ -30,5 +30,5 @@ bye
 More info:
 
 * Main class: `quokka.Quokka`
-* Releases: [Download Duke.jar](https://github.com/WFYishere/ip/releases) 
+* Releases: [Download Quokka.jar](https://github.com/WFYishere/ip/releases) 
 
