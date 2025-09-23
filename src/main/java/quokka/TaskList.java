@@ -60,6 +60,11 @@ public class TaskList {
         return tasks.stream().filter(Task::isDone).count();
     }
 
+    /**
+     * Returns true if a task with the same logical identity already exists.
+     * Identity is derived from type + normalized description (+ date fields
+     * for deadlines/events). Used to prevent adding near-duplicates.
+     */
     public boolean containsDuplicate(Task candidate) {
         String keyB = dupKey(candidate);
         for (Task t : tasks) {
@@ -68,6 +73,14 @@ public class TaskList {
         return false;
     }
 
+    /**
+     * Build a normalized key used for duplicate detection.
+     * For:
+     *  - T: "T|desc"
+     *  - D: "D|desc|by"
+     *  - E: "E|desc|from|to"
+     * Description is lower-cased and trimmed; dates are taken from data string.
+     */
     private static String dupKey(Task t) {
         String[] p = t.toDataString().split("\\s*\\|\\s*");
         if (p.length < 3) {
